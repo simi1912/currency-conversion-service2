@@ -6,12 +6,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import javax.xml.ws.Response;
 import java.math.BigDecimal;
 import java.util.HashMap;
 
 @RestController
 public class ConversionController {
+
+    private CurrencyExchangeProxy proxy;
+
+    public ConversionController(CurrencyExchangeProxy proxy) {
+        this.proxy = proxy;
+    }
 
     @GetMapping("currency-conversion/from/{from}/to/{to}/quantity/{quantity}")
     public CurrencyConversion getCurrencyConversion(
@@ -29,6 +34,20 @@ public class ConversionController {
                 uriVariables);
 
         CurrencyConversion currencyConversion = entity.getBody();
+        currencyConversion.setQuantity(quantity);
+        currencyConversion.setTotalCalculatedAmount(
+                currencyConversion.getConversionMultiple().multiply(quantity));
+
+        return currencyConversion;
+    }
+
+    @GetMapping("currency-conversion-feign/from/{from}/to/{to}/quantity/{quantity}")
+    public CurrencyConversion getCurrencyConversionFeign(
+            @PathVariable String to,
+            @PathVariable String from,
+            @PathVariable BigDecimal quantity) {
+
+        CurrencyConversion currencyConversion = proxy.retrieveExchangeValue(from, to);
         currencyConversion.setQuantity(quantity);
         currencyConversion.setTotalCalculatedAmount(
                 currencyConversion.getConversionMultiple().multiply(quantity));

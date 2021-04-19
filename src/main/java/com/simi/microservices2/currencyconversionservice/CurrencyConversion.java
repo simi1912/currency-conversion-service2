@@ -64,4 +64,13 @@ public class CurrencyConversion {
     public void setTotalCalculatedAmount(BigDecimal totalCalculatedAmount) {
         this.totalCalculatedAmount = totalCalculatedAmount;
     }
+
+
+    public BigDecimal getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity;
+    }
 }
